@@ -25,18 +25,18 @@ class _TestScannerState extends State<TestScanner> {
   bool _reading = false;
   StreamSubscription<NDEFMessage> _stream;
 
-  @override
-  void initState() {
-    super.initState();
-    // Check if the device supports NFC reading, Implement after testing//
-    // NFC.isNDEFSupported.then((bool isSupported) {
-    //   setState(() {
-    //     _supportsNFC = isSupported;
-    //   });
-    // });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // Check if the device supports NFC reading, Implement after testing//
+  //   // NFC.isNDEFSupported.then((bool isSupported) {
+  //   //   setState(() {
+  //   //     _supportsNFC = isSupported;
+  //   //   });
+  //   // });
+  // }
 
-  void nfcScanner() {
+  Future<void> nfcScanner() {
     if (_reading) {
       _stream?.cancel();
       setState(() {
@@ -48,12 +48,16 @@ class _TestScannerState extends State<TestScanner> {
         // Start reading using NFC.readNDEF()
         _stream = NFC
             .readNDEF(
-          readerMode: NFCDispatchReaderMode(),
           once: true,
+          // This is to use a virutal reader
+          //readerMode: NFCDispatchReaderMode(),
           throwOnUserCancel: false,
         )
             .listen((NDEFMessage message) {
           print("read NDEF message: ${message.payload}");
+          if (message.payload != null) {
+            widget.channel.write("O\n");
+          }
         }, onError: (e) {
           // Check error handling guide below
         });
@@ -102,7 +106,7 @@ class _TestScannerState extends State<TestScanner> {
         backgroundColor: Colors.blueAccent,
         title: Center(child: Text("SCANNER           ")),
       ),
-      backgroundColor: Colors.white54,
+      backgroundColor: Colors.black54,
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
         child: Padding(
@@ -114,9 +118,12 @@ class _TestScannerState extends State<TestScanner> {
               Expanded(
                 flex: 1,
                 child: Center(
-                  child: (result != null)
-                      ? Text('Data: ${result}')
-                      : Text('Keep Scanning'),
+                  child: Text(
+                    result,
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
               Container(
