@@ -25,16 +25,16 @@ class _TestScannerState extends State<TestScanner> {
   bool _reading = false;
   StreamSubscription<NDEFMessage> _stream;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // Check if the device supports NFC reading, Implement after testing//
-  //   // NFC.isNDEFSupported.then((bool isSupported) {
-  //   //   setState(() {
-  //   //     _supportsNFC = isSupported;
-  //   //   });
-  //   // });
-  // }
+  @override
+  void initState() {
+    super.initState();
+    // Check if the device supports NFC reading, Implement after testing//
+    NFC.isNDEFSupported.then((bool isSupported) {
+      setState(() {
+        _supportsNFC = isSupported;
+      });
+    });
+  }
 
   Future<void> nfcScanner() {
     if (_reading) {
@@ -57,6 +57,7 @@ class _TestScannerState extends State<TestScanner> {
           print("read NDEF message: ${message.payload}");
           if (message.payload != null) {
             widget.channel.write("O\n");
+            result = message.payload;
           }
         }, onError: (e) {
           // Check error handling guide below
@@ -95,12 +96,12 @@ class _TestScannerState extends State<TestScanner> {
   Widget build(BuildContext context) {
     //Implement after testing
 
-    // if (!_supportsNFC) {
-    //   return RaisedButton(
-    //     child: const Text("You device does not support NFC"),
-    //     onPressed: null,
-    //   );
-    // }
+    if (!_supportsNFC) {
+      return ElevatedButton(
+        child: const Text("You device does not support NFC"),
+        onPressed: null,
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
@@ -126,6 +127,7 @@ class _TestScannerState extends State<TestScanner> {
                   ),
                 ),
               ),
+              //NFC Button
               Container(
                 child: FloatingActionButton.extended(
                   icon: Icon(Icons.wifi),
@@ -139,6 +141,7 @@ class _TestScannerState extends State<TestScanner> {
               SizedBox(
                 height: 80.0,
               ),
+              //QR CODE button
               Container(
                 child: FloatingActionButton.extended(
                   icon: Icon(
