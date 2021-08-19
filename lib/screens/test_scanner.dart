@@ -21,20 +21,20 @@ class TestScanner extends StatefulWidget {
 class _TestScannerState extends State<TestScanner> {
   String result = 'START SCANNING';
   bool showSpinner = false;
-  bool _supportsNFC = true;
+  //bool _supportsNFC = true;
   bool _reading = false;
   StreamSubscription<NDEFMessage> _stream;
 
-  @override
-  void initState() {
-    super.initState();
-    // Check if the device supports NFC reading, Implement after testing//
-    NFC.isNDEFSupported.then((bool isSupported) {
-      setState(() {
-        _supportsNFC = isSupported;
-      });
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // Check if the device supports NFC reading, Implement after testing//
+  //   NFC.isNDEFSupported.then((bool isSupported) {
+  //     setState(() {
+  //       _supportsNFC = isSupported;
+  //     });
+  //   });
+  // }
 
   Future<void> nfcScanner() {
     if (_reading) {
@@ -57,10 +57,15 @@ class _TestScannerState extends State<TestScanner> {
           print("read NDEF message: ${message.payload}");
           if (message.payload != null) {
             widget.channel.write("O\n");
-            result = message.payload;
+            setState(() {
+              result = message.payload;
+            });
           }
         }, onError: (e) {
           // Check error handling guide below
+          setState(() {
+            result = e;
+          });
         });
       });
     }
@@ -96,12 +101,12 @@ class _TestScannerState extends State<TestScanner> {
   Widget build(BuildContext context) {
     //Implement after testing
 
-    if (!_supportsNFC) {
-      return ElevatedButton(
-        child: const Text("You device does not support NFC"),
-        onPressed: null,
-      );
-    }
+    // if (!_supportsNFC) {
+    //   return ElevatedButton(
+    //     child: const Text("Your device does not support NFC"),
+    //     onPressed: null,
+    //   );
+    // }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
@@ -135,6 +140,7 @@ class _TestScannerState extends State<TestScanner> {
                   label: Text("NFC-SCANNER"),
                   onPressed: () async {
                     await nfcScanner();
+                    print('RESULTS: --> $result');
                   },
                 ),
               ),
