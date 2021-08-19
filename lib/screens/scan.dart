@@ -10,29 +10,29 @@ class NFCReader extends StatefulWidget {
 }
 
 class _NFCReaderState extends State {
-  bool _supportsNFC = false;
+  // bool _supportsNFC = false;
   bool _reading = false;
   StreamSubscription<NDEFMessage> _stream;
 
-  @override
-  void initState() {
-    super.initState();
-    // Check if the device supports NFC reading
-    NFC.isNDEFSupported.then((bool isSupported) {
-      setState(() {
-        _supportsNFC = isSupported;
-      });
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // Check if the device supports NFC reading
+  //   NFC.isNDEFSupported.then((bool isSupported) {
+  //     setState(() {
+  //       _supportsNFC = isSupported;
+  //     });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
-    if (!_supportsNFC) {
-      return RaisedButton(
-        child: const Text("You device does not support NFC"),
-        onPressed: null,
-      );
-    }
+    // if (!_supportsNFC) {
+    //   return RaisedButton(
+    //     child: const Text("You device does not support NFC"),
+    //     onPressed: null,
+    //   );
+    // }
 
     return RaisedButton(
         child: Text(_reading ? "Stop reading" : "Start reading"),
