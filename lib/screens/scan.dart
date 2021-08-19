@@ -5,59 +5,79 @@ import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 
 class NFCReader extends StatefulWidget {
   static const String id = 'scan';
+
   @override
   _NFCReaderState createState() => _NFCReaderState();
 }
 
-class _NFCReaderState extends State {
-  // bool _supportsNFC = false;
-  bool _reading = false;
+class _NFCReaderState extends State<NFCReader> {
   StreamSubscription<NDEFMessage> _stream;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // Check if the device supports NFC reading
-  //   NFC.isNDEFSupported.then((bool isSupported) {
-  //     setState(() {
-  //       _supportsNFC = isSupported;
-  //     });
-  //   });
-  // }
+  void _startScanning() {
+    setState(() {
+      _stream = NFC
+          .readNDEF(alertMessage: "Custom message with readNDEF#alertMessage")
+          .listen((NDEFMessage message) {
+        if (message.isEmpty) {
+          print("Read empty NDEF message");
+          return;
+        }
+        print("Read NDEF message with ${message.records.length} records");
+        for (NDEFRecord record in message.records) {
+          print(
+              "Record '${record.id ?? "[NO ID]"}' with TNF '${record.tnf}', type '${record.type}', payload '${record.payload}' and data '${record.data}' and language code '${record.languageCode}'");
+        }
+      }, onError: (error) {
+        setState(() {
+          _stream = null;
+        });
+        if (error is NFCUserCanceledSessionException) {
+          print("user canceled");
+        } else if (error is NFCSessionTimeoutException) {
+          print("session timed out");
+        } else {
+          print("error: $error");
+        }
+      }, onDone: () {
+        setState(() {
+          _stream = null;
+        });
+      });
+    });
+  }
+
+  void _stopScanning() {
+    _stream?.cancel();
+    setState(() {
+      _stream = null;
+    });
+  }
+
+  void _toggleScan() {
+    if (_stream == null) {
+      _startScanning();
+    } else {
+      _stopScanning();
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _stopScanning();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // if (!_supportsNFC) {
-    //   return RaisedButton(
-    //     child: const Text("You device does not support NFC"),
-    //     onPressed: null,
-    //   );
-    // }
-
-    return RaisedButton(
-        child: Text(_reading ? "Stop reading" : "Start reading"),
-        onPressed: () {
-          if (_reading) {
-            _stream?.cancel();
-            setState(() {
-              _reading = false;
-            });
-          } else {
-            setState(() {
-              _reading = true;
-              // Start reading using NFC.readNDEF()
-              _stream = NFC
-                  .readNDEF(
-                once: true,
-                throwOnUserCancel: false,
-              )
-                  .listen((NDEFMessage message) {
-                print("read NDEF message: ${message.payload}");
-              }, onError: (e) {
-                // Check error handling guide below
-              });
-            });
-          }
-        });
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Read NFC example"),
+      ),
+      body: Center(
+          child: ElevatedButton(
+        child: const Text("Toggle scan"),
+        onPressed: _toggleScan,
+      )),
+    );
   }
 }
