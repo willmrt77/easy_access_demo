@@ -22,7 +22,7 @@ class NfcScannerState extends State<NfcScanner> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: Text('NfcManager Plugin Example')),
+        appBar: AppBar(title: Text('NfcManager Plugin')),
         body: SafeArea(
           child: FutureBuilder<bool>(
             future: NfcManager.instance.isAvailable(),
