@@ -17,6 +17,7 @@ class TestScanner extends StatefulWidget {
 class _TestScannerState extends State<TestScanner> {
   String result = 'START SCANNING';
   bool showSpinner = false;
+  bool scan = true;
 
   Future<void> nfcScanner() async {
     bool isAvailable = await NfcManager.instance.isAvailable();
@@ -25,11 +26,21 @@ class _TestScannerState extends State<TestScanner> {
     NfcManager.instance.startSession(
       onDiscovered: (NfcTag tag) async {
         // Do something with an NfcTag instance.
-        print('Tag Data: ');
-        print(tag.data);
         setState(() {
-          result = tag.data.toString();
+          result = 'EXCUTING NFC_MANAGER';
         });
+        print('Tag Data: WORKING!!!!');
+        print(tag.data);
+        if (tag.data != null) {
+          setState(() {
+            result = tag.data.toString();
+            widget.channel.write('F\n');
+          });
+        } else {
+          setState(() {
+            result = "DATA WAS NULL";
+          });
+        }
       },
     );
   }
@@ -38,7 +49,7 @@ class _TestScannerState extends State<TestScanner> {
   void dispose() {
     // TODO: implement dispose
     print('Dispose is executed!******************');
-    widget.channel.write("F\n");
+    widget.channel.write("O\n");
     // widget.channel.close();
     // Stop Nfc Session
     NfcManager.instance.stopSession();
@@ -104,9 +115,8 @@ class _TestScannerState extends State<TestScanner> {
                   icon: Icon(Icons.wifi),
                   backgroundColor: Colors.blueAccent,
                   label: Text("NFC-SCANNER"),
-                  onPressed: () async {
-                    await nfcScanner();
-                    print('RESULTS: --> $result');
+                  onPressed: () {
+                    nfcScanner();
                   },
                 ),
               ),
@@ -126,10 +136,28 @@ class _TestScannerState extends State<TestScanner> {
                     // widget.channel.write("O\n");
                     print(result);
                     if (result == '011880') {
-                      widget.channel.write("O\n");
+                      widget.channel.write("F\n");
                       result = 'START SCANNING';
                     }
                     print('After the if else');
+                  },
+                ),
+              ),
+              SizedBox(
+                height: 80.0,
+              ),
+              Container(
+                child: FloatingActionButton.extended(
+                  icon: Icon(
+                    Icons.camera_alt_outlined,
+                  ),
+                  backgroundColor: Colors.blueAccent,
+                  label: Text("STOP SCANNING!"),
+                  onPressed: () {
+                    setState(() {
+                      scan == false;
+                    });
+                    Navigator.pop(context);
                   },
                 ),
               ),
