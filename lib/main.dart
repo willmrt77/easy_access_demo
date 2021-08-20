@@ -1,11 +1,9 @@
-import 'package:easy_access_demo/screens/scan.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_access_demo/screens/welcome_screen.dart';
 import 'package:easy_access_demo/screens/login_screen.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'screens/test_scanner.dart';
-import 'screens/scan.dart';
 
 void main() async {
   Socket sock = await Socket.connect('192.168.0.164', 80);
@@ -33,7 +31,6 @@ class EasyAccessDemo extends StatelessWidget {
         routes: {
           WelcomeScreen.id: (context) => WelcomeScreen(),
           LoginScreen.id: (context) => LoginScreen(),
-          NFCReader.id: (context) => NFCReader(),
           // ChatScreen.id: (context) => ChatScreen(),
           TestScanner.id: (context) => TestScanner(
                 channel: socket,

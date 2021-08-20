@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>NFCReaderUsageDescription</key>
-    <string>NFC permission is required for easyAccess</string>
+    <string>NFC permission is required for qrcode scanning.</string>
     <key>NSCameraUsageDescription</key>
     <string>Camera permission is required for qrcode scanning.</string>
 	<key>CFBundleDevelopmentRegion</key>

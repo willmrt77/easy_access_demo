@@ -1,13 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:easy_access_demo/components/rounded_button.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
-import 'package:easy_access_demo/main.dart';
 import 'package:majascan/majascan.dart';
-import 'package:nfc_in_flutter/nfc_in_flutter.dart';
+import 'package:nfc_manager/nfc_manager.dart';
 
 class TestScanner extends StatefulWidget {
   static const String id = 'test_scanner';
@@ -21,54 +17,21 @@ class TestScanner extends StatefulWidget {
 class _TestScannerState extends State<TestScanner> {
   String result = 'START SCANNING';
   bool showSpinner = false;
-  //bool _supportsNFC = true;
-  bool _reading = false;
-  StreamSubscription<NDEFMessage> _stream;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // Check if the device supports NFC reading, Implement after testing//
-  //   NFC.isNDEFSupported.then((bool isSupported) {
-  //     setState(() {
-  //       _supportsNFC = isSupported;
-  //     });
-  //   });
-  // }
+  Future<void> nfcScanner() async {
+    bool isAvailable = await NfcManager.instance.isAvailable();
 
-  Future<void> nfcScanner() {
-    if (_reading) {
-      _stream?.cancel();
-      setState(() {
-        _reading = false;
-      });
-    } else {
-      setState(() {
-        _reading = true;
-        // Start reading using NFC.readNDEF()
-        _stream = NFC
-            .readNDEF(
-          once: true,
-          // This is to use a virutal reader
-          //readerMode: NFCDispatchReaderMode(),
-          throwOnUserCancel: false,
-        )
-            .listen((NDEFMessage message) {
-          print("read NDEF message: ${message.payload}");
-          if (message.payload != null) {
-            widget.channel.write("O\n");
-            setState(() {
-              result = message.payload;
-            });
-          }
-        }, onError: (e) {
-          // Check error handling guide below
-          setState(() {
-            result = e;
-          });
+// Start Session
+    NfcManager.instance.startSession(
+      onDiscovered: (NfcTag tag) async {
+        // Do something with an NfcTag instance.
+        print('Tag Data: ');
+        print(tag.data);
+        setState(() {
+          result = tag.data.toString();
         });
-      });
-    }
+      },
+    );
   }
 
   @override
@@ -77,6 +40,9 @@ class _TestScannerState extends State<TestScanner> {
     print('Dispose is executed!******************');
     widget.channel.write("F\n");
     // widget.channel.close();
+    // Stop Nfc Session
+    NfcManager.instance.stopSession();
+
     super.dispose();
   }
 

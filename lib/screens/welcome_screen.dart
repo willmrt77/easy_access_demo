@@ -4,7 +4,6 @@ import 'package:flutter/rendering.dart';
 import 'package:easy_access_demo/screens/login_screen.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:easy_access_demo/components/rounded_button.dart';
-import 'scan.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static const String id = 'welcome_screen';
@@ -89,28 +88,6 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 Navigator.pushNamed(context, LoginScreen.id);
               },
             ),
-            RoundedButton(
-              title: 'Test Scanner',
-              color: Colors.blueAccent,
-              onPressed: () {
-                Navigator.pushNamed(context, NFCReader.id);
-              },
-            ),
-
-            // RoundedButton(
-            //   title: 'Controller',
-            //   color: Colors.blueAccent,
-            //   onPressed: () {
-            //     Navigator.pushNamed(context, Controller.id);
-            //   },
-            // ),
-            // RoundedButton(
-            //   title: 'Scanner',
-            //   color: Colors.blueAccent,
-            //   onPressed: () {
-            //     Navigator.pushNamed(context, Scanner.id);
-            //   },
-            // ),
           ],
         ),
       ),
