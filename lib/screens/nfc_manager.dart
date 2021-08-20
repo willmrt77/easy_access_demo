@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:nfc_manager/nfc_manager.dart';
+import 'dart:io';
 
 // void main() {
 //   WidgetsFlutterBinding.ensureInitialized();
@@ -10,13 +11,26 @@ import 'package:nfc_manager/nfc_manager.dart';
 
 class NfcScanner extends StatefulWidget {
   static const String id = 'nfc_manager';
-
+  final Socket channel;
+  NfcScanner({this.channel});
   @override
   State<StatefulWidget> createState() => NfcScannerState();
 }
 
 class NfcScannerState extends State<NfcScanner> {
   ValueNotifier<dynamic> result = ValueNotifier(null);
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    print('Dispose is executed!******************');
+    widget.channel.write("F\n");
+    // widget.channel.close();
+    // Stop Nfc Session
+    NfcManager.instance.stopSession();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +93,7 @@ class NfcScannerState extends State<NfcScanner> {
     NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
       result.value = tag.data;
       NfcManager.instance.stopSession();
+      widget.channel.write("O\n");
     });
   }
 

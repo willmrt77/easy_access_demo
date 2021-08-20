@@ -49,7 +49,7 @@ class _TestScannerState extends State<TestScanner> {
   void dispose() {
     // TODO: implement dispose
     print('Dispose is executed!******************');
-    widget.channel.write("O\n");
+    widget.channel.write("F\n");
     // widget.channel.close();
     // Stop Nfc Session
     NfcManager.instance.stopSession();

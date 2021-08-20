@@ -32,7 +32,9 @@ class EasyAccessDemo extends StatelessWidget {
         routes: {
           WelcomeScreen.id: (context) => WelcomeScreen(),
           LoginScreen.id: (context) => LoginScreen(),
-          NfcScanner.id: (context) => NfcScanner(),
+          NfcScanner.id: (context) => NfcScanner(
+                channel: socket,
+              ),
           TestScanner.id: (context) => TestScanner(
                 channel: socket,
               ),
