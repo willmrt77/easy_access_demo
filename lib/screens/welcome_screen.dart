@@ -1,9 +1,11 @@
 // import 'package:easy_access/screens/scanner.dart';
+import 'package:easy_access_demo/screens/nfc_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:easy_access_demo/screens/login_screen.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:easy_access_demo/components/rounded_button.dart';
+import 'nfc_manager.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static const String id = 'welcome_screen';
@@ -86,6 +88,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               color: Colors.blueAccent,
               onPressed: () {
                 Navigator.pushNamed(context, LoginScreen.id);
+              },
+            ),
+            RoundedButton(
+              title: 'TEST NFC',
+              color: Colors.blueAccent,
+              onPressed: () {
+                Navigator.pushNamed(context, NfcScanner.id);
               },
             ),
           ],
