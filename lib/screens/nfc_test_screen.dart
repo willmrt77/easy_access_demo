@@ -5,44 +5,66 @@ import 'dart:io';
 import 'package:majascan/majascan.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 
-class TestScanner extends StatefulWidget {
-  static const String id = 'test_scanner';
+class NfcTestScreen extends StatefulWidget {
+  static const String id = 'nfc_test_screen';
   final Socket channel;
-  TestScanner({this.channel});
+  NfcTestScreen({this.channel});
 
   @override
-  _TestScannerState createState() => _TestScannerState();
+  _NfcTestScreenState createState() => _NfcTestScreenState();
 }
 
-class _TestScannerState extends State<TestScanner> {
+class _NfcTestScreenState extends State<NfcTestScreen> {
   String result = 'START SCANNING';
   bool showSpinner = false;
   bool scan = true;
 
-  Future<void> nfcScanner() async {
-    bool isAvailable = await NfcManager.instance.isAvailable();
+  // Function that runs the nfcScanner
 
-// Start Session
-    NfcManager.instance.startSession(
-      onDiscovered: (NfcTag tag) async {
-        // Do something with an NfcTag instance.
-        setState(() {
-          result = 'EXCUTING NFC_MANAGER';
-        });
-        print('Tag Data: WORKING!!!!');
-        print(tag.data);
-        if (tag.data != null) {
+  Future<void> nfcScanner() async {
+    print("[+] Running the nfcScanner function");
+
+    // Check availability
+    bool isAvailable = await NfcManager.instance.isAvailable();
+    if (isAvailable) {
+      print("[+] inside the if statement");
+      while (isAvailable) {
+        // Start session and register callback.
+        print("[+] inside the while loop");
+        NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
+          // Manipulating tag
+          // Obtain an Ndef instance from tag
+          Ndef ndef = Ndef.from(tag);
+          if (ndef == null) {
+            print('Tag is not ndef');
+            return;
+          } else {
+            widget.channel.write('O\n');
+          }
+
+// You can get an NdefMessage instance cached at discovery time
+          NdefMessage cachedMessage = ndef.cachedMessage;
+
+          // Copied code above this line, below is mine
+          print("Tag.data printed below");
+          print(tag.data);
+          print(cachedMessage);
           setState(() {
             result = tag.data.toString();
-            widget.channel.write('F\n');
           });
-        } else {
-          setState(() {
-            result = "DATA WAS NULL";
-          });
-        }
-      },
-    );
+        });
+      }
+    } else {
+      setState(() {
+        print("[+] Inside the ELSE statement");
+        result = 'NO SESSION AVAILABLE';
+      });
+    }
+  }
+
+  @override
+  initState() {
+    super.initState();
   }
 
   @override
@@ -51,27 +73,9 @@ class _TestScannerState extends State<TestScanner> {
     print('Dispose is executed!******************');
     widget.channel.write("F\n");
     // widget.channel.close();
-    // Stop Nfc Session
-    NfcManager.instance.stopSession();
-
     super.dispose();
-  }
-
-  Future _scanQR() async {
-    String qrResult = await MajaScan.startScan(
-        title: 'QRCODE SCANNER',
-        barColor: Colors.red,
-        titleColor: Colors.white,
-        qRCornerColor: Colors.blue,
-        qRScannerColor: Colors.red,
-        flashlightEnable: true,
-        scanAreaScale: 0.7
-
-        /// value 0.0 to 1.0
-        );
-    setState(() {
-      result = qrResult;
-    });
+    // Stop session and unregister callback.
+    NfcManager.instance.stopSession();
   }
 
   @override
@@ -79,7 +83,7 @@ class _TestScannerState extends State<TestScanner> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueAccent,
-        title: Center(child: Text("SCANNER           ")),
+        title: Center(child: Text("SCANNER         ")),
       ),
       backgroundColor: Colors.black54,
       body: ModalProgressHUD(
@@ -104,6 +108,7 @@ class _TestScannerState extends State<TestScanner> {
               //NFC Button
               Container(
                 child: FloatingActionButton.extended(
+                  heroTag: "btn1",
                   icon: Icon(Icons.wifi),
                   backgroundColor: Colors.blueAccent,
                   label: Text("NFC-SCANNER"),
@@ -116,30 +121,13 @@ class _TestScannerState extends State<TestScanner> {
                 height: 80.0,
               ),
               //QR CODE button
-              Container(
-                child: FloatingActionButton.extended(
-                  icon: Icon(
-                    Icons.camera_alt_outlined,
-                  ),
-                  backgroundColor: Colors.blueAccent,
-                  label: Text("QR-CODE"),
-                  onPressed: () async {
-                    await _scanQR();
-                    // widget.channel.write("O\n");
-                    print(result);
-                    if (result == '011880') {
-                      widget.channel.write("F\n");
-                      result = 'START SCANNING';
-                    }
-                    print('After the if else');
-                  },
-                ),
-              ),
+
               SizedBox(
                 height: 80.0,
               ),
               Container(
                 child: FloatingActionButton.extended(
+                  heroTag: "btn2",
                   icon: Icon(
                     Icons.camera_alt_outlined,
                   ),
