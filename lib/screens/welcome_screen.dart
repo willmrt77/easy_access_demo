@@ -69,7 +69,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     TypewriterAnimatedText(
                       'Easy Access',
                       textStyle: TextStyle(
-                        fontSize: 45.0,
+                        fontSize: 30.0,
                         fontWeight: FontWeight.w900,
                         color: Colors.white,
                       ),

@@ -28,32 +28,30 @@ class _NfcTestScreenState extends State<NfcTestScreen> {
     bool isAvailable = await NfcManager.instance.isAvailable();
     if (isAvailable) {
       print("[+] inside the if statement");
-      while (isAvailable) {
-        // Start session and register callback.
-        print("[+] inside the while loop");
-        NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
-          // Manipulating tag
-          // Obtain an Ndef instance from tag
-          Ndef ndef = Ndef.from(tag);
-          if (ndef == null) {
-            print('Tag is not ndef');
-            return;
-          } else {
-            widget.channel.write('O\n');
-          }
-
+      setState(() {
+        result = 'Tag Data: WORKING!!!!';
+      });
+      print('Tag Data: WORKING!!!!');
+      widget.channel.write('O\n');
+      NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
+        // Manipulating tag
+        // Obtain an Ndef instance from tag
+        Ndef ndef = Ndef.from(tag);
+        // if (ndef == null) {
+        //   print('Tag is not ndef');
+        //   return;
+        // }
 // You can get an NdefMessage instance cached at discovery time
-          NdefMessage cachedMessage = ndef.cachedMessage;
+        NdefMessage cachedMessage = ndef.cachedMessage;
 
-          // Copied code above this line, below is mine
-          print("Tag.data printed below");
-          print(tag.data);
-          print(cachedMessage);
-          setState(() {
-            result = tag.data.toString();
-          });
+        // Copied code above this line, below is mine
+        print("Tag.data printed below");
+        print(tag.data);
+        print(cachedMessage);
+        setState(() {
+          result = tag.data.toString();
         });
-      }
+      });
     } else {
       setState(() {
         print("[+] Inside the ELSE statement");

@@ -34,7 +34,7 @@ class _TestScannerState extends State<TestScanner> {
         if (tag.data != null) {
           setState(() {
             result = tag.data.toString();
-            widget.channel.write('F\n');
+            widget.channel.write('O\n');
           });
         } else {
           setState(() {
@@ -128,7 +128,7 @@ class _TestScannerState extends State<TestScanner> {
                     // widget.channel.write("O\n");
                     print(result);
                     if (result == '011880') {
-                      widget.channel.write("F\n");
+                      widget.channel.write("O\n");
                       result = 'START SCANNING';
                     }
                     print('After the if else');

@@ -72,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   try {
                     if (password != null && email != null) {
                       if (password == '123456' && email == 'will@email.com') {
-                        // Navigator.pushNamed(context, TestScanner.id);
+                        Navigator.pushNamed(context, TestScanner.id);
                       }
                     }
                     setState(() {
