@@ -2,9 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'dart:io';
-import 'package:majascan/majascan.dart';
-//import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
+import 'package:majascan/majascan.dart';
 
 class NfcTestScreen extends StatefulWidget {
   static const String id = 'nfc_test_screen';
@@ -41,6 +40,23 @@ class _NfcTestScreenState extends State<NfcTestScreen> {
     widget.channel.write("F\n");
     // widget.channel.close();
     super.dispose();
+  }
+
+  Future _scanQR() async {
+    String qrResult = await MajaScan.startScan(
+        title: 'QRCODE SCANNER',
+        barColor: Colors.red,
+        titleColor: Colors.white,
+        qRCornerColor: Colors.blue,
+        qRScannerColor: Colors.red,
+        flashlightEnable: true,
+        scanAreaScale: 0.7
+
+        /// value 0.0 to 1.0
+        );
+    setState(() {
+      result = qrResult;
+    });
   }
 
   @override
@@ -92,7 +108,6 @@ class _NfcTestScreenState extends State<NfcTestScreen> {
                     } else {
                       setState(() {
                         _reading = true;
-                        widget.channel.write('O\n');
                         // Start reading using NFC.readNDEF()
                         _stream = NFC
                             .readNDEF(
@@ -100,7 +115,10 @@ class _NfcTestScreenState extends State<NfcTestScreen> {
                           throwOnUserCancel: false,
                         )
                             .listen((NDEFMessage message) {
-                          print("read NDEF message: ${message.payload}");
+                          print("\nRead NDEF message: ${message.payload}\n");
+                          if (message.payload != null) {
+                            widget.channel.write('O\n');
+                          }
                         }, onError: (e) {
                           // Check error handling guide below
                         });
@@ -113,7 +131,28 @@ class _NfcTestScreenState extends State<NfcTestScreen> {
                 height: 80.0,
               ),
               //QR CODE button
-
+              Container(
+                child: FloatingActionButton.extended(
+                  icon: Icon(
+                    Icons.camera_alt_outlined,
+                  ),
+                  backgroundColor: Colors.blueAccent,
+                  label: Text("QR-CODE"),
+                  onPressed: () async {
+                    await _scanQR();
+                    // widget.channel.write("O\n");
+                    print(result);
+                    if (result == '011880') {
+                      widget.channel.write("O\n");
+                      result = 'START SCANNING';
+                    }
+                    print('After the if else');
+                  },
+                ),
+              ),
+              SizedBox(
+                height: 80.0,
+              ),
               Container(
                 child: FloatingActionButton.extended(
                   icon: Icon(

@@ -91,7 +91,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               },
             ),
             RoundedButton(
-              title: 'TEST NFC',
+              title: 'TEST CONTROLLER',
               color: Colors.blueAccent,
               onPressed: () {
                 Navigator.pushNamed(context, NfcTestScreen.id);
